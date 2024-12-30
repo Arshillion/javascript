@@ -1,0 +1,205 @@
+
+<style>
+    .header-clock {
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+    }
+    img.tree{
+        width: 50px;
+    }
+    .header-clock h2 {
+        color: #292929;
+        font-family: Oswald;
+        font-size: 32px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 32px;
+        text-transform: uppercase;
+        position:relative;
+        margin: 0;
+        letter-spacing: 1px;
+    }
+    .header-clock h2 img {
+        position:absolute;
+        top:-18px;
+        left:-18px;
+    }
+    .header-clock .clock-timer {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .header-clock .clock-area {
+        border-radius: 4px;
+        border: 1px solid #FF1167;
+        background: #CD202B;
+        display: flex;
+        padding: 8px 6px;
+        justify-content: center;
+        align-items: baseline;
+        gap: 4px;
+    }
+    .header-clock .clock-area span {
+        color: #FFFFFF;
+        font-family: Oswald;
+        font-size: 32px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 24px;
+        width: 32px;
+    }
+    @media only screen and (max-width: 767px) {
+        .header-clock .clock-area span {
+            font-family: Poppins;
+            font-weight: 400;
+            color: #fff;
+            border-radius: 10px;
+            border: 3px solid #fff;
+            background-color: #cd202b;
+            font-size: 36px;
+            text-align: center;
+            font-style: normal;
+            text-decoration: none;
+            padding: 15px 10px;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+        .header-clock .clock-area small {
+            color: #cd202b;
+            font-family: Poppins;
+            font-size: 15px;
+            text-align: center;
+            font-weight: 400;
+            font-style: normal;
+            text-decoration: none;
+        }
+    }
+    .header-clock .clock-area small {
+        color: #000;
+        font-size: 15px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 12px;
+    }
+    
+    .hrs0{
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .hrs1{
+        color: #fff;
+        border-radius: 10px;
+        border: 3px solid #fff;
+        background-color: #cd202b;
+        font-family: inherit;
+        font-size: 36px;
+        text-align: center;
+        font-weight: 700;
+        font-style: normal;
+        text-decoration: none;
+        padding: 15px 10px;
+        margin-left: 5px;
+        margin-right: 5px;
+        flex: 50%;
+    }
+    .hrs2{
+        color: #cd202b;
+        font-family: inherit;
+        font-size: 15px;
+        text-align: center;
+        font-weight: 400;
+        font-style: normal;
+        text-decoration: none;
+    }
+</style>
+<div class="header-clock">
+    <div class="clock-timer">
+        <div class="hrs0">
+            <div class="hrs hrs1">
+                <span>00</span>
+            </div>
+            <div class="hrs2">
+                <small>Hours</small>
+            </div>
+        </div>
+        <div class="hrs0">
+            <div class="min hrs1">
+                <span>00</span>
+            </div>
+            <div class="hrs2">
+                <small>Minutes</small>
+            </div>
+        </div>
+        <div class="hrs0">
+            <div class="sec hrs1">
+                <span>00</span>
+            </div>
+            <div class="hrs2">
+                <small>Seconds</small>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        
+    const toTwoDigits = (number) => {
+        return number.toString().padStart(2, '0');
+    };
+
+    const addDaysUntilPositiveMilliseconds = (date, add_day) => {
+        let daysToAdd = 0;
+        let milliseconds = date.getTime() - pstDate(new Date());
+
+        while (milliseconds < 0) {
+            daysToAdd += add_day;
+            milliseconds += 86400000 * add_day;
+        }
+
+        return new Date(date.getTime() + daysToAdd * 86400000);
+    };
+
+    const pstDate = (date) => {
+        const offset = -8;
+        return new Date(date.getTime() + offset * 3600000);
+    };
+
+    const getTimeDiff = () => {
+        const expire_date = pstDate(new Date('2024-11-4'));
+        const today = pstDate(new Date());
+        let milliseconds;
+        if (expire_date - today > 0) {
+            milliseconds = expire_date - today;
+        } else {
+            milliseconds = addDaysUntilPositiveMilliseconds(expire_date, 1) - today;
+        }
+        const sec = Math.floor(milliseconds / 1000);
+        const min = Math.floor(sec / 60);
+        const hrs = Math.floor(min / 60);
+        return { hrs: hrs % 24, min: min % 60, sec: sec % 60 };
+    };
+
+    const setTime = (clock) => {
+        const hour_elm = clock.querySelector('.hrs span');
+        const min_elm = clock.querySelector('.min span');
+        const sec_elm = clock.querySelector('.sec span');
+        const { hrs, min, sec } = getTimeDiff();
+        hour_elm.innerHTML = toTwoDigits(hrs);
+        min_elm.innerHTML = toTwoDigits(min);
+        sec_elm.innerHTML = toTwoDigits(sec);
+    };
+
+    const timer_int = setInterval(() => {
+        const clock_areas = [...document.querySelectorAll('.header-clock')];
+        if (clock_areas) {
+            clock_areas.map((clock_area) => {
+                setInterval(() => setTime(clock_area), 1000);
+            });
+            clearInterval(timer_int);
+        }
+    }, 10);
+</script>
